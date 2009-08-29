@@ -1,0 +1,80 @@
+#!/bin/bash
+# strip-profiles v1.0 2009-08-28
+# Author: Miles Pomeroy
+# For stripping color profiles from images within a directory. 
+# Useful for web development.
+#
+# Requires: pngcrush and jpegtran (jpeg library)
+# Installation of dependencies: sudo port install pngcrush jpeg
+# Usage: strip-profiles /directory/where/images/are/located/
+
+### VARIABLES ###
+
+ORG='originals' # name of the directory to place original images in
+orgdir="$1/$ORG/"
+
+### ERROR CHECKING ###
+
+if [ ! -d "$1" ] # is argument a valid directory, will also show usage if no argument
+then
+    echo "Aborting: $1 is not a valid directory.
+
+Usage: strip-profiles directory
+    
+  Strips color profiles from JPG and PNG images within a directory.
+  Original images are placed within a new directory called $ORG.
+  pngcrush and jpegtran are required. pngcrush is available through
+  MacPorts. As well as jpegtran via the standard jpeg library."
+
+    exit 1
+fi
+
+if ! builtin type -P pngcrush &>/dev/null # is pngcrus installed?
+then
+    echo "Aborting: pngcrush is required but is not installed. pngcrush can
+be installed via MacPorts." 
+
+    exit 1
+fi
+
+if ! builtin type -P jpegtran &>/dev/null # is jpegtran installed?
+then
+    echo "Aborting: jpegtran is required but is not installed. jpegtran can
+be installed via the jpeg library in MacPorts."
+
+    exit 1
+fi
+
+if [ -d "$orgdir" ] # does the $ORG directory already exist, if so don't run
+then
+    echo "Aborting: $ORG directory already exists in $1.
+
+Delete directory or change the name of the originals directory 
+in this script. Then try running strip-profiles again."
+
+    exit 1
+fi
+
+### THE PROGRAM ###
+
+mkdir $ORG
+
+for png in *.png *.PNG
+do
+    if [ -e "$png" ] # does the file exist
+    then
+        mv "$png" "$orgdir$png"
+        pngcrush -q -rem gAMA -rem cHRM -rem iCCP -rem sRGB "$orgdir$png" "$png"
+    fi
+done
+
+for jpg in *.jpg *.JPG *.jpeg *.JPEG
+do
+    if [ -e "$jpg" ] # does the file exist
+    then
+        mv "$jpg" "$orgdir$jpg"
+        jpegtran -optimize -outfile "$jpg" "$orgdir$jpg"
+    fi
+done
+
+exit 0
