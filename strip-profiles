@@ -5,8 +5,7 @@
 # Useful for web development.
 #
 # Requires: pngcrush and jpegtran (jpeg library)
-# Installation of dependencies: sudo port install pngcrush jpeg
-# Usage: strip-profiles /directory/where/images/are/located/
+# Usage: strip-profiles <dir>
 
 ### VARIABLES ###
 
@@ -19,28 +18,27 @@ if [ ! -d "$1" ] # is argument a valid directory, will also show usage if no arg
 then
     echo "Aborting: $1 is not a valid directory.
 
-Usage: strip-profiles directory
+Usage: strip-profiles <dir>
     
   Strips color profiles from JPG and PNG images within a directory.
   Original images are placed within a new directory called $ORG.
-  pngcrush and jpegtran are required. pngcrush is available through
-  MacPorts. As well as jpegtran via the standard jpeg library."
+  pngcrush and jpegtran are required. jpegtran can be found in the
+  standard jpeg library."
 
     exit 1
 fi
 
-if ! builtin type -P pngcrush &>/dev/null # is pngcrus installed?
+if ! builtin type -P pngcrush &>/dev/null # is pngcrush installed?
 then
-    echo "Aborting: pngcrush is required but is not installed. pngcrush can
-be installed via MacPorts." 
+    echo "Aborting: pngcrush is required but is not installed." 
 
     exit 1
 fi
 
 if ! builtin type -P jpegtran &>/dev/null # is jpegtran installed?
 then
-    echo "Aborting: jpegtran is required but is not installed. jpegtran can
-be installed via the jpeg library in MacPorts."
+    echo "Aborting: jpegtran is required but is not installed. jpegtran
+can be found in the standard jpeg library."
 
     exit 1
 fi
